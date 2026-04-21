@@ -7,12 +7,12 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
-type Cron interface {
+type Schedule interface {
 	cron.Schedule
 }
 
 type MultipleSchedule struct {
-	sch []Cron
+	sch []Schedule
 }
 
 func (s *MultipleSchedule) Next(t time.Time) time.Time {
@@ -29,7 +29,7 @@ func (s *MultipleSchedule) Next(t time.Time) time.Time {
 	return next
 }
 
-func NewMultipleSchedule(cs ...Cron) (*MultipleSchedule, error) {
+func NewMultipleSchedule(cs ...Schedule) (*MultipleSchedule, error) {
 	if len(cs) == 0 {
 		return nil, fmt.Errorf("at least one cron schedule is required")
 	}

@@ -14,7 +14,7 @@ var standardParser = cron.NewParser(
 )
 
 // Parse 解析 spec 字符串
-func Parse(spec string) (Cron, error) {
+func Parse(spec string) (Schedule, error) {
 	if !strings.HasPrefix(spec, DescriptionPrefix) {
 		return standardParser.Parse(spec)
 	}
@@ -38,7 +38,7 @@ func Parse(spec string) (Cron, error) {
 	}
 }
 
-func parseEvery(parts []string) (Cron, error) {
+func parseEvery(parts []string) (Schedule, error) {
 	if len(parts) < 2 {
 		return nil, fmt.Errorf("invalid @every spec: %v", parts)
 	}
@@ -49,13 +49,13 @@ func parseEvery(parts []string) (Cron, error) {
 	return cron.Every(duration), nil
 }
 
-func parseDaily(parts []string) (Cron, error) {
+func parseDaily(parts []string) (Schedule, error) {
 	if len(parts) < 2 {
 		return nil, fmt.Errorf("invalid @daily spec: %v", parts)
 	}
 	// 支持 @daily 5:00 或者 @daily 0:00,12:00
 	times := strings.Split(parts[1], AndChar)
-	var schedules []Cron
+	var schedules []Schedule
 	for _, t := range times {
 		hour, minute, err := parseTime(t)
 		if err != nil {
@@ -75,7 +75,7 @@ func parseDaily(parts []string) (Cron, error) {
 	return NewMultipleSchedule(schedules...)
 }
 
-func parseWeekly(parts []string) (Cron, error) {
+func parseWeekly(parts []string) (Schedule, error) {
 	// @weekly 1 5:00 -> Monday 5:00
 	// @weekly 1-5 5:00 -> Mon-Fri 5:00
 	if len(parts) < 3 {
@@ -85,7 +85,7 @@ func parseWeekly(parts []string) (Cron, error) {
 	timeStr := parts[2]
 
 	times := strings.Split(timeStr, AndChar)
-	var schedules []Cron
+	var schedules []Schedule
 	for _, t := range times {
 		hour, minute, err := parseTime(t)
 		if err != nil {
@@ -106,7 +106,7 @@ func parseWeekly(parts []string) (Cron, error) {
 	return NewMultipleSchedule(schedules...)
 }
 
-func parseMonthly(parts []string) (Cron, error) {
+func parseMonthly(parts []string) (Schedule, error) {
 	// @monthly 1 5:00
 	// @monthly L 5:00
 	// @monthly 15,L 23:00
@@ -126,7 +126,7 @@ func parseMonthly(parts []string) (Cron, error) {
 		ts = append(ts, [2]int{hour, minute})
 	}
 
-	var schedules []Cron
+	var schedules []Schedule
 	for _, dom := range doms {
 		if strings.HasPrefix(dom, LastNDomPrefix) {
 			// L
