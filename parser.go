@@ -13,7 +13,7 @@ var standardParser = cron.NewParser(
 	cron.Second | cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.Dow | cron.Descriptor,
 )
 
-// Parse 解析 spec 字符串
+// Parse parses the spec string
 func Parse(spec string) (Schedule, error) {
 	if !strings.HasPrefix(spec, DescriptionPrefix) {
 		return standardParser.Parse(spec)
@@ -53,7 +53,7 @@ func parseDaily(parts []string) (Schedule, error) {
 	if len(parts) < 2 {
 		return nil, fmt.Errorf("invalid @daily spec: %v", parts)
 	}
-	// 支持 @daily 5:00 或者 @daily 0:00,12:00
+	// Supports @daily 5:00 or @daily 0:00,12:00
 	times := strings.Split(parts[1], AndChar)
 	var schedules []Schedule
 	for _, t := range times {
@@ -61,7 +61,7 @@ func parseDaily(parts []string) (Schedule, error) {
 		if err != nil {
 			return nil, err
 		}
-		// 构造标准 cron 格式: 0 minute hour * * *
+		// Construct standard cron format: 0 minute hour * * *
 		spec := fmt.Sprintf("0 %d %d * * *", minute, hour)
 		sch, err := standardParser.Parse(spec)
 		if err != nil {
@@ -91,8 +91,8 @@ func parseWeekly(parts []string) (Schedule, error) {
 		if err != nil {
 			return nil, err
 		}
-		// 构造标准 cron 格式: 0 minute hour * * days
-		// 注意: robfig/cron 星期天是 0 (或 7)
+		// Construct standard cron format: 0 minute hour * * days
+		// Note: robfig/cron Sunday is 0 (or 7)
 		spec := fmt.Sprintf("0 %d %d * * %s", minute, hour, days)
 		sch, err := standardParser.Parse(spec)
 		if err != nil {
