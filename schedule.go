@@ -22,7 +22,7 @@ func (s *MultipleSchedule) Next(t time.Time) time.Time {
 		if tmp.IsZero() {
 			continue
 		}
-		if next.IsZero() || next.Before(tmp) {
+		if next.IsZero() || tmp.Before(next) {
 			next = tmp
 		}
 	}
