@@ -83,4 +83,4 @@ Executes at the specified date(s) and time(s) every month. Supports special `L` 
 
 ## License
 
-[MIT](LICENSE)
+[Apache 2.0](LICENSE)
